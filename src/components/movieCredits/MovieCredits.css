@@ -1,0 +1,24 @@
+.credits-box {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.credits-item {
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  border-radius: 6px;
+  width: 200px;
+  overflow: hidden;
+}
+
+.credits-item:hover,
+.credits-item:focus {
+  box-shadow: rgba(3, 48, 248, 0.971) 0px 3px 8px;
+}
+
+.credits-name-box {
+  padding: 8px 4px;
+}

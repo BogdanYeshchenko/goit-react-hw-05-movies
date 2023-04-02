@@ -1,0 +1,16 @@
+.reviews-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reviews-item {
+  padding: 12px 8px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  border-radius: 6px;
+}
+
+.reviews-item:hover,
+.reviews-item:focus {
+  box-shadow: rgba(3, 48, 248, 0.971) 0px 3px 8px;
+}

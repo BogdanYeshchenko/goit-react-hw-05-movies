@@ -1,16 +1,28 @@
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import Trending from 'page/trending/Trending';
+import Movies from 'page/movies/Movies';
+import { Route, Routes } from 'react-router-dom';
+import Layout from './layout/Layout';
+import MovieReviews from './movie-reviews/MovieReviews';
+import MovieCredits from './movieCredits/MovieCredits';
+import MoviesDetailes from './MoviesDetailes/MoviesDetailes';
+
 export const App = () => {
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
+    <>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Trending />} />
+          <Route path="movies" element={<Movies />} />
+          <Route path="movies/:id" element={<MoviesDetailes />}>
+            <Route patr="credits" element={<MovieCredits />} />
+            <Route part="reviews" element={<MovieReviews />} />
+          </Route>
+        </Route>
+      </Routes>
+      <ToastContainer />
+    </>
   );
 };
