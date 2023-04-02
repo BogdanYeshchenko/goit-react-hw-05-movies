@@ -18,7 +18,6 @@ const Trending = () => {
       setIsLoading(false);
     };
     getData();
-    console.log(trendingMovies);
   }, []);
 
   if (isLoading) {
