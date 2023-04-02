@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { searchMovies } from 'serviceSearch/searchMovies';
 import { HiCamera } from 'react-icons/hi2';
 import PacmanLoader from 'react-spinners/PacmanLoader';
@@ -7,26 +7,24 @@ import ConteinerCenter from 'components/conteiner/conteinerCenter';
 import Conteiner from 'components/conteiner/conteiner';
 import './Movies.css';
 
-const Movies = ({ children }) => {
-  const [searcParams, setSearchParams] = useSearchParams();
-  const search = searcParams.get('search');
-  const pageS = searcParams.get('page');
+const Movies = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const prevSearchParams = Object.fromEntries([...searchParams]);
+  const search = searchParams.get('search');
+  const pageUrl = searchParams.get('pageUrl');
 
-  const [searchWord, setSearchWord] = useState('');
-  const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(null);
   const [listMovies, setListMovies] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const cenLoadMore = totalPage <= page;
+  const cenLoadMore = totalPage <= pageUrl;
 
   async function handleSubmit(e) {
     setIsLoading(true);
     e.preventDefault();
-    const data = await searchMovies(searchWord, 1);
+    const data = await searchMovies(search, 1);
     const { results, total_pages } = data;
 
-    setSearchParams({ page: 1 });
-    setPage(1);
+    setSearchParams({ ...prevSearchParams, pageUrl: 1 });
     setListMovies(results);
     setTotalPage(total_pages);
     setIsLoading(false);
@@ -34,10 +32,9 @@ const Movies = ({ children }) => {
 
   async function handleLoadMore(e) {
     setIsLoading(true);
-    setSearchParams(page);
-    setPage(prev => prev + 1);
+    setSearchParams({ ...prevSearchParams, pageUrl: Number(pageUrl) + 1 });
     e.preventDefault();
-    const data = await searchMovies(searchWord, page + 1);
+    const data = await searchMovies(search, Number(pageUrl) + 1);
     const { results } = data;
 
     setListMovies(prev => [...prev, ...results]);
@@ -47,8 +44,7 @@ const Movies = ({ children }) => {
   function handleInputChenge(e) {
     const { value } = e.target;
 
-    setSearchWord(value);
-    setSearchParams({ search: value });
+    setSearchParams({ ...prevSearchParams, search: value });
   }
 
   return (
@@ -63,7 +59,7 @@ const Movies = ({ children }) => {
                 className="search-input"
                 onChange={handleInputChenge}
                 type="text"
-                value={searchWord}
+                value={search || ''}
               />
             </label>
             <button className="btn btn-primary" type="submit">
@@ -79,7 +75,7 @@ const Movies = ({ children }) => {
           )}
 
           {listMovies?.length === 0 && !isLoading && (
-            <li>{`Movies '${searchWord}' not found.`}</li>
+            <li>{`Movies '${search}' not found.`}</li>
           )}
           {listMovies?.length > 0 &&
             !isLoading &&
@@ -100,7 +96,7 @@ const Movies = ({ children }) => {
             className="btn btn-primary"
             onClick={handleLoadMore}
           >
-            {`Load more ${page}/${totalPage}`}
+            {`Load more ${pageUrl}/${totalPage}`}
           </button>
         )}
       </div>
