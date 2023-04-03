@@ -12,8 +12,8 @@ const Movies = () => {
   const prevSearchParams = Object.fromEntries([...searchParams]);
   const search = searchParams.get('search');
   const pageUrl = searchParams.get('pageUrl');
-  const [inputValue, setInputValue] = useState('');
 
+  const [inputValue, setInputValue] = useState('');
   const [totalPage, setTotalPage] = useState(null);
   const [listMovies, setListMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,14 +21,13 @@ const Movies = () => {
 
   const location = useLocation();
 
-  console.log(location);
+  console.log(listMovies);
 
   useEffect(() => {
     async function searchData() {
       setIsLoading(true);
       const data = await searchMovies(search, pageUrl);
       const { results, total_pages } = data;
-      console.log(1);
 
       setListMovies(prev => [...prev, ...results]);
       setTotalPage(total_pages);
@@ -41,8 +40,10 @@ const Movies = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
-    setListMovies([]);
-    setSearchParams({ ...prevSearchParams, pageUrl: 1, search: inputValue });
+    if (search !== inputValue) {
+      setListMovies([]);
+      setSearchParams({ ...prevSearchParams, pageUrl: 1, search: inputValue });
+    }
   }
 
   async function handleLoadMore(e) {
@@ -76,26 +77,25 @@ const Movies = () => {
           </form>
         </div>
         <ul>
-          {listMovies?.length === 0 && !isLoading && (
+          {listMovies.length === 0 && !isLoading && totalPage && (
             <li>{`Movies '${search}' not found.`}</li>
           )}
-          {listMovies?.length > 0 &&
-            listMovies.map(el => {
-              return (
-                <li key={el.id}>
-                  <Link state={location} to={`${el.id}`}>
-                    <HiCamera /> {el.title || el.name}
-                  </Link>
-                </li>
-              );
-            })}
+          {listMovies.map(el => {
+            return (
+              <li key={el.id}>
+                <Link state={location} to={`${el.id}`}>
+                  <HiCamera /> {el.title || el.name}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
         {isLoading && (
           <ConteinerCenter>
             <PacmanLoader color="#00ddf4" size="50px" />
           </ConteinerCenter>
         )}
-        {totalPage && (
+        {listMovies.length !== 0 && totalPage && (
           <button
             disabled={cenLoadMore}
             type="button"
