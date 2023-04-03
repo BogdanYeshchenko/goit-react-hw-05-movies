@@ -3,18 +3,22 @@ import { searchReviewsByID } from 'serviceSearch/searchMovies';
 import PacmanLoader from 'react-spinners/PacmanLoader';
 import ConteinerCenter from 'components/conteiner/conteinerCenter';
 import './MovieReviews.css';
+import { useParams } from 'react-router-dom';
 
-const MovieReviews = id => {
+const MovieReviews = () => {
   const [reviewsData, setReviewsData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { id } = useParams();
+
   useEffect(() => {
-    async function sarchData(x) {
-      const data = await searchReviewsByID(x);
+    async function sarchData() {
+      const data = await searchReviewsByID(id);
       setReviewsData(data);
       setIsLoading(false);
     }
 
-    sarchData(id);
+    sarchData();
   }, [id]);
 
   console.log(reviewsData);
@@ -27,7 +31,7 @@ const MovieReviews = id => {
     );
   }
 
-  if (reviewsData.results.length === 0) {
+  if (reviewsData.results?.length === 0) {
     return <div>Sorry no reviews...</div>;
   }
   return (

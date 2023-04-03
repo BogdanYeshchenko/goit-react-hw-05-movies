@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { searchMovies } from 'serviceSearch/searchMovies';
 import { HiCamera } from 'react-icons/hi2';
 import PacmanLoader from 'react-spinners/PacmanLoader';
@@ -12,39 +12,47 @@ const Movies = () => {
   const prevSearchParams = Object.fromEntries([...searchParams]);
   const search = searchParams.get('search');
   const pageUrl = searchParams.get('pageUrl');
+  const [inputValue, setInputValue] = useState('');
 
   const [totalPage, setTotalPage] = useState(null);
-  const [listMovies, setListMovies] = useState(null);
+  const [listMovies, setListMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const cenLoadMore = totalPage <= pageUrl;
 
-  async function handleSubmit(e) {
-    setIsLoading(true);
-    e.preventDefault();
-    const data = await searchMovies(search, 1);
-    const { results, total_pages } = data;
+  const location = useLocation();
 
-    setSearchParams({ ...prevSearchParams, pageUrl: 1 });
-    setListMovies(results);
-    setTotalPage(total_pages);
-    setIsLoading(false);
+  console.log(location);
+
+  useEffect(() => {
+    async function searchData() {
+      setIsLoading(true);
+      const data = await searchMovies(search, pageUrl);
+      const { results, total_pages } = data;
+      console.log(1);
+
+      setListMovies(prev => [...prev, ...results]);
+      setTotalPage(total_pages);
+      setIsLoading(false);
+    }
+    if (search) {
+      searchData();
+    }
+  }, [search, pageUrl]);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    setListMovies([]);
+    setSearchParams({ ...prevSearchParams, pageUrl: 1, search: inputValue });
   }
 
   async function handleLoadMore(e) {
-    setIsLoading(true);
     setSearchParams({ ...prevSearchParams, pageUrl: Number(pageUrl) + 1 });
-    e.preventDefault();
-    const data = await searchMovies(search, Number(pageUrl) + 1);
-    const { results } = data;
-
-    setListMovies(prev => [...prev, ...results]);
-    setIsLoading(false);
   }
 
   function handleInputChenge(e) {
     const { value } = e.target;
 
-    setSearchParams({ ...prevSearchParams, search: value });
+    setInputValue(value);
   }
 
   return (
@@ -59,7 +67,7 @@ const Movies = () => {
                 className="search-input"
                 onChange={handleInputChenge}
                 type="text"
-                value={search || ''}
+                value={inputValue}
               />
             </label>
             <button className="btn btn-primary" type="submit">
@@ -68,27 +76,25 @@ const Movies = () => {
           </form>
         </div>
         <ul>
-          {isLoading && (
-            <ConteinerCenter>
-              <PacmanLoader color="#00ddf4" size="50px" />
-            </ConteinerCenter>
-          )}
-
           {listMovies?.length === 0 && !isLoading && (
             <li>{`Movies '${search}' not found.`}</li>
           )}
           {listMovies?.length > 0 &&
-            !isLoading &&
             listMovies.map(el => {
               return (
                 <li key={el.id}>
-                  <Link to={`${el.id}`}>
+                  <Link state={location} to={`${el.id}`}>
                     <HiCamera /> {el.title || el.name}
                   </Link>
                 </li>
               );
             })}
         </ul>
+        {isLoading && (
+          <ConteinerCenter>
+            <PacmanLoader color="#00ddf4" size="50px" />
+          </ConteinerCenter>
+        )}
         {totalPage && (
           <button
             disabled={cenLoadMore}

@@ -3,18 +3,23 @@ import { searchCastByID } from 'serviceSearch/searchMovies';
 import PacmanLoader from 'react-spinners/PacmanLoader';
 import ConteinerCenter from 'components/conteiner/conteinerCenter';
 import './MovieCredits.css';
+import { useParams } from 'react-router-dom';
 
-const MovieCredits = id => {
-  const [creditsData, setCreditsData] = useState(null);
+const MovieCredits = () => {
+  const [creditsData, setCreditsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { id } = useParams();
+  console.log('cred ', id);
+
   useEffect(() => {
-    async function sarchData(x) {
-      const data = await searchCastByID(x);
+    async function sarchData() {
+      const data = await searchCastByID(id);
       setCreditsData(data);
       setIsLoading(false);
     }
 
-    sarchData(id);
+    sarchData();
   }, [id]);
 
   console.log(creditsData);

@@ -2,19 +2,30 @@ import Conteiner from 'components/conteiner/conteiner';
 // import MovieReviews from 'components/movie-reviews/MovieReviews';
 // import MovieCredits from 'components/movieCredits/MovieCredits';
 import { Suspense, useEffect, useState } from 'react';
-import { Link, NavLink, Outlet, useParams } from 'react-router-dom';
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 import { searchMovieByID } from 'serviceSearch/searchMovies';
 import PacmanLoader from 'react-spinners/PacmanLoader';
 import ConteinerCenter from 'components/conteiner/conteinerCenter';
 import css from './MoviesDetailes.module.css';
 
-const MoviesDetailes = ({ location }) => {
+const MoviesDetailes = () => {
   const [dataOfMovie, setDataOfMovie] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   // const [isCatsOpen, setIsCatsOpen] = useState(false);
   // const [isReviewsOpen, setIsReviewsOpen] = useState(false);
+  const location = useLocation();
+
+  const [goback] = useState(location.state || '/');
 
   const { id } = useParams();
+
+  console.log(location);
 
   useEffect(() => {
     async function fetchData() {
@@ -47,7 +58,7 @@ const MoviesDetailes = ({ location }) => {
     <Conteiner>
       <div className={css.movDetailesBox}>
         <div>
-          <Link to="" className="btn btn-primary">
+          <Link to={goback} className="btn btn-primary">
             Go back
           </Link>
         </div>
